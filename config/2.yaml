@@ -1,0 +1,175 @@
+# local_planning_manager の設定ファイル
+
+# 管理対象のLifecycleノード
+lifecycle_nodes:
+  - "pure_pursuit_node"
+  - "dwa_node"
+  - "stop_motion_node"
+  - "in_place_turn_node"
+
+# 状態定義（Lifecycleノードの組み合わせで状態を表現）
+states:
+  - id: "PurePursuit"
+    semantic:
+      pure_pursuit_node: ACTIVE
+      dwa_node: INACTIVE
+      stop_motion_node: INACTIVE
+      in_place_turn_node: INACTIVE
+    description: "Normal operation with pure pursuit"
+    allowed: true
+
+  - id: "DWA"
+    semantic:
+      pure_pursuit_node: INACTIVE
+      dwa_node: ACTIVE
+      stop_motion_node: INACTIVE
+      in_place_turn_node: INACTIVE
+    description: "Dynamic obstacle avoidance mode"
+    allowed: true
+
+  - id: "Stopping"
+    semantic:
+      pure_pursuit_node: INACTIVE
+      dwa_node: INACTIVE
+      stop_motion_node: ACTIVE
+      in_place_turn_node: INACTIVE
+    description: "Emergency stop state"
+    allowed: true
+
+  - id: "InplaceTurn"
+    semantic:
+      pure_pursuit_node: INACTIVE
+      dwa_node: INACTIVE
+      stop_motion_node: INACTIVE
+      in_place_turn_node: ACTIVE
+    description: "In-place turning to find alternative path"
+    allowed: true
+
+
+# 状態遷移レシピ
+transitions:
+  # PurePursuit → Stopping（緊急停止）
+  - from_state: "PurePursuit"
+    to_state: "Stopping"
+    description: "Emergency stop due to close obstacle"
+    action_steps:
+      - target_node_name: "pure_pursuit_node"
+        operation: "deactivate"
+        timeout_s: 2.0
+        retry: 0
+      - target_node_name: "stop_motion_node"
+        operation: "configure"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "stop_motion_node"
+        operation: "activate"
+        timeout_s: 3.0
+        retry: 1
+
+  # PurePursuit → DWA（障害物回避モード）
+  - from_state: "PurePursuit"
+    to_state: "DWA"
+    description: "Switch to avoidance mode for obstacle"
+    action_steps:
+      - target_node_name: "dwa_node"
+        operation: "configure"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "dwa_node"
+        operation: "activate"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "pure_pursuit_node"
+        operation: "deactivate"
+        timeout_s: 2.0
+        retry: 0
+
+  # DWA → Stopping（緊急停止）
+  - from_state: "DWA"
+    to_state: "Stopping"
+    description: "Emergency stop during avoidance"
+    action_steps:
+      - target_node_name: "dwa_node"
+        operation: "deactivate"
+        timeout_s: 2.0
+        retry: 0
+      - target_node_name: "stop_motion_node"
+        operation: "configure"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "stop_motion_node"
+        operation: "activate"
+        timeout_s: 3.0
+        retry: 1
+
+  # DWA → PurePursuit（通常走行に復帰）
+  - from_state: "DWA"
+    to_state: "PurePursuit"
+    description: "Resume normal operation, obstacle cleared"
+    action_steps:
+      - target_node_name: "pure_pursuit_node"
+        operation: "configure"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "pure_pursuit_node"
+        operation: "activate"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "dwa_node"
+        operation: "deactivate"
+        timeout_s: 2.0
+        retry: 0
+
+  # Stopping → PurePursuit（停止から復帰）
+  - from_state: "Stopping"
+    to_state: "PurePursuit"
+    description: "Obstacle cleared, resume normal operation"
+    action_steps:
+      - target_node_name: "stop_motion_node"
+        operation: "deactivate"
+        timeout_s: 2.0
+        retry: 0
+      - target_node_name: "pure_pursuit_node"
+        operation: "configure"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "pure_pursuit_node"
+        operation: "activate"
+        timeout_s: 3.0
+        retry: 1
+
+  # Stopping → InplaceTurn（タイムアウト後の回転）
+  - from_state: "Stopping"
+    to_state: "InplaceTurn"
+    description: "Timeout in stopped state, trying to find alternative path"
+    action_steps:
+      - target_node_name: "stop_motion_node"
+        operation: "deactivate"
+        timeout_s: 2.0
+        retry: 0
+      - target_node_name: "in_place_turn_node"
+        operation: "configure"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "in_place_turn_node"
+        operation: "activate"
+        timeout_s: 3.0
+        retry: 1
+
+  # InplaceTurn → DWA（回転後に回避モード）
+  - from_state: "InplaceTurn"
+    to_state: "DWA"
+    description: "Turn completed, resume with avoidance mode"
+    action_steps:
+      - target_node_name: "in_place_turn_node"
+        operation: "deactivate"
+        timeout_s: 2.0
+        retry: 0
+      - target_node_name: "dwa_node"
+        operation: "configure"
+        timeout_s: 3.0
+        retry: 1
+      - target_node_name: "dwa_node"
+        operation: "activate"
+        timeout_s: 3.0
+        retry: 1

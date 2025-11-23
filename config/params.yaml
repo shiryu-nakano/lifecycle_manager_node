@@ -1,0 +1,30 @@
+local_planning_manager_node:
+  ros__parameters:
+    # エリア定義
+    area_list: ["A", "B", "C"]
+    
+    # エリアA設定
+    area_a:
+      pure_pursuit_to_stopping_threshold: 0.5
+      pure_pursuit_to_dwa_threshold: 1.0
+      dwa_to_stopping_threshold: 0.5
+      stopping_timeout: 5.0
+      inplace_turn_timeout: 1.0
+    
+    # エリアB設定
+    area_b:
+      pure_pursuit_to_stopping_threshold: 0.5
+      stopping_timeout: 10.0
+    
+    # エリアC設定
+    area_c:
+      pure_pursuit_to_stopping_threshold: 0.5
+    
+    # トピック名
+    topics:
+      current_state: "current_state"
+      obstacle_detected: "obstacle_detected"
+      obstacle_distance: "obstacle_distance"
+      current_pose: "current_pose"
+      state_transition: "state_transition"
+      current_area: "current_area"
