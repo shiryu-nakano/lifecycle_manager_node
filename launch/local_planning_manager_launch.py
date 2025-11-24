@@ -5,15 +5,15 @@ import os
 
 def generate_launch_description():
     config = os.path.join(
-        get_package_share_directory('local_planning_manager'),
+        get_package_share_directory('lifecycle_manager_sample'),
         'config',
         'params.yaml'
     )
 
     return LaunchDescription([
         Node(
-            package='local_planning_manager',
-            executable='local_planning_manager',
+            package='lifecycle_manager_sample',
+            executable='local_planning_manager_node',
             name='local_planning_manager_node',
             parameters=[config],
             output='screen'
