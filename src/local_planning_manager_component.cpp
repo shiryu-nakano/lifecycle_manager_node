@@ -1,7 +1,8 @@
 #include "local_planning_manager/local_planning_manager_component.hpp"
-#include "local_planning_manager/area_strategies/area_a_strategy.hpp"
-#include "local_planning_manager/area_strategies/area_b_strategy.hpp"
-#include "local_planning_manager/area_strategies/area_c_strategy.hpp"
+#include "local_planning_manager/core/strategy.hpp"
+#include "core/strategies/area_a_strategy.cpp"
+#include "core/strategies/area_b_strategy.cpp"
+#include "core/strategies/area_c_strategy.cpp"
 #include <limits>
 #include <iostream>
 #include <cmath>

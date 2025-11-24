@@ -1,7 +1,7 @@
 #pragma once
-#include "../area_strategy.hpp"
-#include "../transition_handlers/pure_pursuit_handlers.hpp"
-#include "../transition_handlers/stopping_handlers.hpp"
+#include "../../../include/local_planning_manager/core/strategy.hpp"
+#include "../transition_handlers/pure_pursuit_handlers.cpp"
+#include "../transition_handlers/stopping_handlers.cpp"
 
 namespace local_planning_manager
 {

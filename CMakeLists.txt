@@ -3,6 +3,8 @@ project(lifecycle_manager_sample)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
+  # メモリ使用量削減のための最適化レベル調整
+  add_compile_options(-O1)
 endif()
 
 # find dependencies
@@ -93,19 +95,19 @@ if(BUILD_EXAMPLES)
     tf2_geometry_msgs
   )
   
-  # デモマネージャーノード
-  add_executable(demo_manager_node
-    src/demo_manager_node.cpp
-    src/demo_manager_component.cpp
-  )
-  
-  ament_target_dependencies(demo_manager_node
-    rclcpp
-    lifecycle_msgs
-    std_msgs
-    geometry_msgs
-    visualization_msgs
-  )
+  # デモマネージャーノード (現在は未実装のためコメントアウト)
+  # add_executable(demo_manager_node
+  #   src/demo_manager_node.cpp
+  #   src/demo_manager_component.cpp
+  # )
+  # 
+  # ament_target_dependencies(demo_manager_node
+  #   rclcpp
+  #   lifecycle_msgs
+  #   std_msgs
+  #   geometry_msgs
+  #   visualization_msgs
+  # )
   
   # デモノードのインストール
   install(TARGETS
@@ -113,7 +115,7 @@ if(BUILD_EXAMPLES)
     slow_drive_node
     stop_node
     robot_simulator_node
-    demo_manager_node
+    # demo_manager_node  # 未実装のためコメントアウト
     DESTINATION lib/${PROJECT_NAME}
   )
 endif()
