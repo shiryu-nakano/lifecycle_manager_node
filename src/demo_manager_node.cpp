@@ -7,14 +7,14 @@
 #include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
-#include "demo/demo_types.hpp"
-#include "demo/demo_manager_component.hpp"
+#include "local_planning_manager/common_types.hpp"
+#include "local_planning_manager/demo_manager_component.hpp"
 
 using namespace std::chrono_literals;
 
 /**
  * @brief デモ用のマネージャーノード
- * 
+ *
  * ロボットの位置に基づいてエリアを判定し、
  * 適切な戦略を選択してライフサイクルノードを管理
  */
@@ -26,7 +26,7 @@ public:
         // パラメータ
         this->declare_parameter<double>("tick_hz", 2.0);
         this->declare_parameter<double>("area_a_threshold", 5.0);
-        this->declare_parameter<double>("area_b_threshold", 10.0);
+        this->declare_parameter<double>("area_b_threshold", 5.0);
 
         double tick_hz = this->get_parameter("tick_hz").as_double();
         area_a_threshold_ = this->get_parameter("area_a_threshold").as_double();
@@ -74,18 +74,18 @@ public:
 private:
     void create_lifecycle_clients()
     {
+        // でもで使うnode群のライフサイクルクライアントを作成
         const std::vector<std::string> node_names = {
             "straight_drive_node",
             "slow_drive_node",
-            "stop_node"
-        };
+            "stop_node"};
 
-        for (const auto& node_name : node_names)
+        for (const auto &node_name : node_names)
         {
             std::string service_name = "/" + node_name + "/change_state";
             lifecycle_clients_[node_name] =
                 this->create_client<lifecycle_msgs::srv::ChangeState>(service_name);
-            
+
             std::string get_service_name = "/" + node_name + "/get_state";
             lifecycle_get_clients_[node_name] =
                 this->create_client<lifecycle_msgs::srv::GetState>(get_service_name);
@@ -103,33 +103,33 @@ private:
     void initialize_nodes()
     {
         RCLCPP_INFO(this->get_logger(), "Initializing lifecycle nodes...");
-        
+
         // 全ノードをconfigureする
-        std::this_thread::sleep_for(1s);  // ノードの起動を待つ
-        
+        std::this_thread::sleep_for(1s); // ノードの起動を待つ
+
         configure_node("straight_drive_node");
         configure_node("slow_drive_node");
         configure_node("stop_node");
-        
+
         // straight_drive_nodeのみactivateする
         std::this_thread::sleep_for(500ms);
         activate_node("straight_drive_node");
-        
+
         RCLCPP_INFO(this->get_logger(), "Initialization complete");
     }
 
-    void configure_node(const std::string& node_name)
+    void configure_node(const std::string &node_name)
     {
         auto request = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
         request->transition.id = lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE;
-        
+
         auto client = lifecycle_clients_[node_name];
         if (!client->wait_for_service(5s))
         {
             RCLCPP_WARN(this->get_logger(), "Service %s not available", node_name.c_str());
             return;
         }
-        
+
         auto result = client->async_send_request(request);
         if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result, 5s) ==
             rclcpp::FutureReturnCode::SUCCESS)
@@ -138,18 +138,18 @@ private:
         }
     }
 
-    void activate_node(const std::string& node_name)
+    void activate_node(const std::string &node_name)
     {
         auto request = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
         request->transition.id = lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE;
-        
+
         auto client = lifecycle_clients_[node_name];
         if (!client->wait_for_service(5s))
         {
             RCLCPP_WARN(this->get_logger(), "Service %s not available", node_name.c_str());
             return;
         }
-        
+
         auto result = client->async_send_request(request);
         if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result, 5s) ==
             rclcpp::FutureReturnCode::SUCCESS)
@@ -183,7 +183,7 @@ private:
                         recipe_opt.value().description.c_str());
             execute_transition_recipe(recipe_opt.value());
             state_entered_at_ = std::chrono::steady_clock::now();
-            
+
             // 状態の更新
             update_current_state();
         }
@@ -225,17 +225,17 @@ private:
         }
     }
 
-    void execute_transition_recipe(const demo::DemoTransitionRecipe& recipe)
+    void execute_transition_recipe(const demo::DemoTransitionRecipe &recipe)
     {
         RCLCPP_INFO(this->get_logger(), "Executing transition: %s", recipe.description.c_str());
 
-        for (const auto& step : recipe.steps)
+        for (const auto &step : recipe.steps)
         {
             auto request = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
             request->transition.id = transition_map_[step.operation];
 
             auto client = lifecycle_clients_[step.target_node_name];
-            
+
             if (!client->wait_for_service(std::chrono::duration<double>(step.timeout_s)))
             {
                 RCLCPP_WARN(this->get_logger(), "Service %s not available",
@@ -245,7 +245,7 @@ private:
 
             auto result = client->async_send_request(request);
             auto timeout = std::chrono::duration<double>(step.timeout_s);
-            
+
             if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result, timeout) ==
                 rclcpp::FutureReturnCode::SUCCESS)
             {
@@ -326,7 +326,7 @@ private:
         return marker;
     }
 
-    visualization_msgs::msg::Marker create_area_text_marker(int id, double x, const std::string& text)
+    visualization_msgs::msg::Marker create_area_text_marker(int id, double x, const std::string &text)
     {
         visualization_msgs::msg::Marker marker;
         marker.header.frame_id = "odom";
@@ -376,7 +376,7 @@ private:
     rclcpp::TimerBase::SharedPtr marker_timer_;
 };
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<DemoManagerNode>());
