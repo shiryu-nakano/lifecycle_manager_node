@@ -5,7 +5,7 @@ import os
 
 def generate_launch_description():
     # パッケージのパスを取得
-    package_name = 'lifecycle_manager_sample'
+    package_name = 'transition_judgement_node'
     
     # 設定ファイルのパス
     config_file = os.path.join(

@@ -1,5 +1,9 @@
-# lifecycle_manager_node
+# Transition Judgement Node
+複数のLifeCycle Nodeの組み合わせによる状態を受け取って、状態遷移を判定するノード
 
+
+
+## 構成
 ```
 local_planning_manager/
 ├── include/
