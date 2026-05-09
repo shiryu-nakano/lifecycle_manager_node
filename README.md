@@ -36,4 +36,3 @@ local_planning_manager/
 └── package.xml
 ```
 
-
