@@ -58,11 +58,11 @@ def generate_launch_description():
             output='screen'
         ),
         
-        # ローカルプランニングマネージャー（デモマネージャーの代わりに使用）
+        # デモマネージャー（LocalPlanningManagerComponent を使うリファレンス）
         Node(
             package=package_name,
-            executable='local_planning_manager_node',
-            name='local_planning_manager_node',
+            executable='demo_manager_node',
+            name='demo_manager_node',
             parameters=[config_file],
             output='screen'
         ),

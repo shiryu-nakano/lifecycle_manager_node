@@ -3,7 +3,7 @@
 #include <memory>
 #include <optional>
 
-namespace local_planning_manager
+namespace transition_recipe_test
 {
 
 // * @brief Chain of Responsibility パターンの基底クラス
@@ -26,4 +26,4 @@ public:
     }
 };
 
-} // namespace local_planning_manager
+} // namespace transition_recipe_test

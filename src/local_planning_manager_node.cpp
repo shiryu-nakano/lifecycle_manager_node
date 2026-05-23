@@ -1,11 +1,14 @@
-#include "local_planning_manager/local_planning_manager_node.hpp"
+#include "transition_recipe_test/local_planning_manager_node.hpp"
+#include "transition_recipe_test/core/strategies/area_a_strategy.hpp"
+#include "transition_recipe_test/core/strategies/area_b_strategy.hpp"
+#include "transition_recipe_test/core/strategies/area_c_strategy.hpp"
 
 static constexpr const char *PURE_PURSUIT_NODE = "pure_pursuit_node";
 static constexpr const char *DWA_NODE = "dwa_node";
 static constexpr const char *STOP_MOTION_NODE = "stop_motion_node"; // 修正
 static constexpr const char *IN_PLACE_TURN_NODE = "in_place_turn_node";
 
-namespace local_planning_manager
+namespace transition_recipe_test
 {
 
     // コンストラクタ
@@ -16,8 +19,15 @@ namespace local_planning_manager
         // パラメータの宣言と取得
         const double tick_hz = this->declare_parameter<double>("tick_hz", 2.0); // [Hz]
 
-        // Component初期化
+        // Component初期化（production 用の戦略・エリア構成をここで注入する）
         component_ = std::make_unique<LocalPlanningManagerComponent>();
+        component_->setAreaList({"A", "B", "C"});
+        component_->registerAreaSwitchCondition("A", 10.0, 5.0, 2.0);   // A → B
+        component_->registerAreaSwitchCondition("B", 20.0, 10.0, 2.0);  // B → C
+        component_->registerAreaStrategy("A", std::make_unique<AreaAStrategy>());
+        component_->registerAreaStrategy("B", std::make_unique<AreaBStrategy>());
+        component_->registerAreaStrategy("C", std::make_unique<AreaCStrategy>());
+        component_->initialize();
 
         // 初期値
         // TODO 立ち上げる時の値をコンストラクタで与えられるようにする．もちろんdefault値も設定する
@@ -291,4 +301,4 @@ namespace local_planning_manager
     }
 
 
-} // namespace local_planning_manager
+} // namespace transition_recipe_test

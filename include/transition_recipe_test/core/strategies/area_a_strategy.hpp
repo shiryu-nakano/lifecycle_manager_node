@@ -1,15 +1,15 @@
 #pragma once
-#include "../../../include/local_planning_manager/core/strategy.hpp"
-#include "../transition_handlers/pure_pursuit_handlers.cpp"
-#include "../transition_handlers/dwa_handlers.cpp"
-#include "../transition_handlers/stopping_handlers.cpp"
-#include "../transition_handlers/inplace_turn_handlers.cpp"
+#include "transition_recipe_test/core/strategy.hpp"
+#include "transition_recipe_test/core/transition_handlers/pure_pursuit_handlers.hpp"
+#include "transition_recipe_test/core/transition_handlers/dwa_handlers.hpp"
+#include "transition_recipe_test/core/transition_handlers/stopping_handlers.hpp"
+#include "transition_recipe_test/core/transition_handlers/inplace_turn_handlers.hpp"
 
 /*
 Area A Strategy:
 →参照
 */
-namespace local_planning_manager
+namespace transition_recipe_test
 {
 
 class AreaAStrategy : public AreaStrategy {
@@ -36,4 +36,4 @@ public:
     std::string get_area_name() const override { return "A"; }
 };
 
-} // namespace local_planning_manager
+} // namespace transition_recipe_test

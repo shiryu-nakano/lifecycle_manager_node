@@ -1,8 +1,8 @@
 #pragma once
-#include "../../../include/local_planning_manager/core/transition_handler.hpp"
-#include "../../../include/local_planning_manager/common_types.hpp"
+#include "transition_recipe_test/core/transition_handler.hpp"
+#include "transition_recipe_test/common_types.hpp"
 
-namespace local_planning_manager
+namespace transition_recipe_test
 {
 
 class StoppingToPurePursuitHandler : public TransitionHandler {
@@ -69,4 +69,4 @@ public:
     }
 };
 
-} // namespace local_planning_manager
+} // namespace transition_recipe_test

@@ -14,7 +14,7 @@
 #include <string>
 #include <chrono>
 
-namespace local_planning_manager
+namespace transition_recipe_test
 {
 
 /**
@@ -81,4 +81,4 @@ private:
     void createTransitionMap();
 };
 
-} // namespace local_planning_manager
+} // namespace transition_recipe_test

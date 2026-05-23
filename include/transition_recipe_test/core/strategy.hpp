@@ -4,7 +4,7 @@
 #include <string>
 #include <optional>
 
-namespace local_planning_manager
+namespace transition_recipe_test
 {
 
 /**
@@ -27,4 +27,4 @@ public:
     }
 };
 
-} // namespace local_planning_manager
+} // namespace transition_recipe_test
